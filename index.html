@@ -82,6 +82,8 @@
       padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border-subtle);
       font-variant: small-caps;
+      flex-shrink: 0;
+      min-height: 3rem;
     }
 
     h3 {
@@ -244,6 +246,17 @@
       flex-direction: column;
       height: 100%;
       overflow: hidden;
+    }
+
+    /* Заголовок и номер страницы не сжимаются и не «съезжают»
+       на фото при нехватке места — фото прижато своим flex-shrink: 0 */
+    .page-content > h2,
+    .page-content > .page-number,
+    .page-content > ul,
+    .page-content > p,
+    .page-content > .highlight-quote,
+    .page-content > .data-row {
+      flex-shrink: 0;
     }
 
     .page-number {
@@ -424,11 +437,15 @@
 
     /* ============================================================
        ТОНКАЯ НАСТРОЙКА СТРАНИЦ 5 И 6
+       Самые насыщенные текстом страницы — уменьшаем кегль,
+       чтобы весь контент гарантированно уместился в 800px.
     ============================================================ */
     .page-5 h3,
     .page-6 h3 {
-      margin-top: 0.5rem;
-      margin-bottom: 0.25rem;
+      font-size: 0.62rem;
+      line-height: 1.45;
+      margin-top: 0.45rem;
+      margin-bottom: 0.2rem;
     }
 
     .page-5 h3:first-of-type,
@@ -438,10 +455,15 @@
 
     .page-5 li,
     .page-6 li {
-      font-size: 0.67rem;
-      line-height: 1.52;
-      margin-bottom: 0.26rem;
-      letter-spacing: 1.1px;
+      font-size: 0.62rem;
+      line-height: 1.45;
+      margin-bottom: 0.24rem;
+      letter-spacing: 1.05px;
+    }
+
+    .page-5 .image-placeholder,
+    .page-6 .image-placeholder {
+      margin: 0.4rem 0 0.6rem 0;
     }
 
     /* ============================================================
@@ -478,54 +500,64 @@
 
     /* ============================================================
        АДАПТИВНОСТЬ · ОБЩАЯ
+       Масштабируем разворот через zoom (а НЕ transform: scale).
+       zoom пересчитывает layout, поэтому обёртки .row-outer /
+       .row-inner автоматически получают правильную высоту и ширину,
+       а содержимое страниц не выходит за границы и не наезжает
+       на заголовки. Коэффициенты подобраны так, чтобы при каждом
+       диапазоне ширин не возникало горизонтального скролла.
     ============================================================ */
     @media (max-width: 1280px) {
       body { padding: 40px 20px; }
-      .row { transform: scale(0.92); transform-origin: top center; }
+      .row { zoom: 0.88; }
     }
 
     @media (max-width: 1100px) {
-      .row { transform: scale(0.82); }
+      .row { zoom: 0.75; }
     }
 
     @media (max-width: 950px) {
-      .row { transform: scale(0.70); }
+      .row { zoom: 0.58; }
       .booklet-header h1 { font-size: 1.4rem; }
     }
 
     @media (max-width: 750px) {
-      .row { transform: scale(0.58); }
+      .row { zoom: 0.46; }
     }
 
     @media (max-width: 600px) {
-      .row { transform: scale(0.45); }
+      .row { zoom: 0.36; }
     }
 
     @media (max-width: 480px) {
-      .row { transform: scale(0.36); }
+      .row { zoom: 0.32; }
     }
 
     /* ============================================================
-       IPHONE 14 PRO · 393×852 · СКРИН БЕЗ ОБРЕЗКИ
-       Один разворот = один экран. Три страницы по 400px
-       (сумма 1200px) масштабируются до ширины экрана iPhone.
-       Коэффициент ≈ 0.325 — влезает точно.
+       IPHONE 14 PRO · 390–430px · ОДИН РАЗВОРОТ = ОДИН ЭКРАН
+       1200px (три страницы по 400px) масштабируются до ширины
+       экрана. Для 390px — 0.325 (ровно 390px), для 430px — 0.35.
     ============================================================ */
-    @media only screen
-      and (min-device-width: 390px)
-      and (max-device-width: 430px)
-      and (-webkit-min-device-pixel-ratio: 3),
-      only screen
-      and (min-width: 390px)
-      and (max-width: 430px) {
+    @media only screen and (min-width: 390px) and (max-width: 419px) {
+      .row { zoom: 0.325; }
+    }
+
+    @media only screen and (min-width: 420px) and (max-width: 430px) {
+      .row { zoom: 0.35; }
+    }
+
+    @media only screen and (min-width: 390px) and (max-width: 430px) {
 
       body {
         padding: 0;
         margin: 0;
-        align-items: flex-start;
+        align-items: center;
         justify-content: flex-start;
         background: var(--bg-deep);
       }
+
+      /* Меньше фото на мобильных → больше места под текст */
+      :root { --photo-height: 120px; }
 
       /* Заголовок буклета — компактный */
       .booklet-header {
@@ -550,43 +582,22 @@
         margin: 0.5rem auto;
       }
 
-      /* Каждый ряд — отдельный экран */
-      .row {
-        transform: scale(0.325);
-        transform-origin: top left;
-        margin: 0;
-        margin-bottom: 0;
-        box-shadow: none;
-        border-radius: 0;
-        overflow: visible;
-      }
-
-      /* Обёртки-экраны для корректного позиционирования масштаба */
+      /* Разворот. Обёртка центрирует масштабированный ряд;
+         высота/ширина считаются автоматически (zoom), поэтому
+         ничего не нужно задавать вручную и нечему «ломаться». */
       .row-outer,
       .row-inner {
-        height: calc(800px * 0.325);
-        width: calc(1200px * 0.325);
+        width: 100%;
+        margin: 0 0 20px 0;
+      }
+
+      .row {
         margin: 0 auto;
-        margin-bottom: 20px;
-        overflow: hidden;
         border-radius: 6px;
+        overflow: hidden;
         box-shadow:
           0 0 0 1px rgba(223, 186, 115, 0.15),
           0 15px 40px -10px rgba(0, 0, 0, 0.8);
-        position: relative;
-      }
-
-      /* Внутренний ряд — точное позиционирование */
-      .row-outer,
-      .row-inner {
-        display: block;
-      }
-
-      .row-outer > .row,
-      .row-inner > .row {
-        position: absolute;
-        top: 0;
-        left: 0;
       }
 
       /* Футер */
@@ -607,24 +618,6 @@
         margin: 0 auto 0.8rem auto;
         background: var(--gold);
         opacity: 0.3;
-      }
-    }
-
-    /* Дополнительно для iPhone 14 Pro Max и Plus — 430px */
-    @media only screen
-      and (min-width: 420px)
-      and (max-width: 480px)
-      and (orientation: portrait) {
-
-      .row {
-        transform: scale(0.36);
-        transform-origin: top left;
-      }
-
-      .row-outer,
-      .row-inner {
-        height: calc(800px * 0.36);
-        width: calc(1200px * 0.36);
       }
     }
   </style>
