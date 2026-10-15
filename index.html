@@ -23,7 +23,15 @@
       --page-width: 400px;
       --page-height: 800px;
       --photo-height: 135px;
-      --scale: 1;
+      /* ============================================================
+         МАСШТАБ РАЗВОРОТА — считается автоматически от ширины окна:
+             --row-scale = (100vw - 24px) / 1200px,  максимум 1
+         1200px — ширина разворота (3 страницы × 400px),
+         24px   — поля по 12px слева и справа.
+         CSS не умеет делить px на px, поэтому tan(atan2(A, B))
+         превращает отношение длин A/B в безразмерное число.
+      ============================================================ */
+      --row-scale: min(1, tan(atan2(100vw - 24px, 1200px)));
     }
 
     * {
@@ -49,7 +57,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 60px 40px;
+      padding: 60px 12px;
+      overflow-x: hidden;
       background-image: radial-gradient(circle at 25% 15%, rgba(223, 186, 115, 0.025) 0%, transparent 55%);
     }
 
@@ -67,7 +76,7 @@
     }
 
     h1 {
-      font-size: 1.85rem;
+      font-size: clamp(1.2rem, 4vw, 1.85rem);
       letter-spacing: 4px;
       font-weight: 600;
       margin-bottom: 0.4rem;
@@ -155,17 +164,18 @@
       gap: 0;
       margin: 0;
       width: fit-content;
-      transform: scale(var(--scale, 1));
+      transform: scale(var(--row-scale, 1));
       transform-origin: top left;
     }
 
-    /* Обёртка удерживает разворот. Её размеры пересчитываются
-       вместе с --scale, поэтому после transform ничего не выходит
-       за границы и текст/картинки не «разъезжаются» на телефоне. */
+    /* Обёртка удерживает разворот. Её размеры = 1200×800, умноженные
+       на тот же --row-scale, поэтому видимый размер ряда и размер
+       обёртки совпадают пиксель-в-пиксель: нет ни обрезки текста,
+       ни выхода за границы, ни горизонтального скролла. */
     .row-outer,
     .row-inner {
-      width: calc(1200px * var(--scale, 1));
-      height: calc(800px * var(--scale, 1));
+      width: min(calc(1200px * var(--row-scale, 1)), 100%);
+      height: calc(800px * var(--row-scale, 1));
       overflow: hidden;
       margin: 0 auto 80px auto;
       border-radius: 2px;
@@ -513,49 +523,46 @@
 
     /* ============================================================
        АДАПТИВНОСТЬ · МАСШТАБ РАЗВОРОТА
-       --scale подставляется скриптом внизу страницы ровно под
-       ширину экрана. Ниже — резервные значения на случай, если
-       JavaScript отключён. Используется transform: scale (обычно
-       работает везде), а размеры обёрток считаются из --scale,
-       поэтому текст и картинки всегда влезают без обрезки.
+       Масштаб НЕ привязан к устройству — он считается формулой
+       из :root (--row-scale) и обновляется при любой ширине окна.
+
+       Формула:   --row-scale = (100vw - 24px) / 1200px, максимум 1
+
+       Какой масштаб получается на разных диапазонах ширины:
+         320px  → 0.25  · Маленькие телефоны (iPhone SE, старые Android)
+         360px  → 0.28  · Средние Android, iPhone 13 mini
+         393px  → 0.31  · iPhone 14 / 15 Pro, Galaxy S23
+         430px  → 0.34  · iPhone 14 / 15 Pro Max
+         480px  → 0.38  · Galaxy S24 Ultra, складные
+         600px  → 0.48  · Телефон в ландшафте
+         768px  → 0.62  · Планшеты (iPad mini)
+         900px  → 0.73  · iPad 10.9 / iPad Air
+         1024px → 0.83  · iPad Pro (портрет)
+         1200px → 0.98  · Нетбук / узкий десктоп
+         ≥1224px→ 1.00  · Десктоп (дальше не растягиваем)
+
+       Масштаб применяется через transform: scale на .row;
+       размеры .row-outer / .row-inner считаются из той же
+       переменной, поэтому всё сходится без обрезки и без
+       горизонтального скролла.
     ============================================================ */
-    @media (max-width: 1280px) {
-      body { padding: 40px 20px; }
-      :root { --scale: 0.95; }
+
+    /* --- Планшеты и узкий десктоп: больше воздуха сверху/снизу --- */
+    @media (min-width: 481px) {
+      body { padding: 40px 12px; }
     }
 
-    @media (max-width: 1100px) { :root { --scale: 0.86; } }
-
-    @media (max-width: 950px) {
-      :root { --scale: 0.72; }
-      .booklet-header h1 { font-size: 1.4rem; }
+    @media (min-width: 901px) {
+      body { padding: 60px 12px; }
     }
 
-    @media (max-width: 750px) { :root { --scale: 0.58; } }
-    @media (max-width: 600px) { :root { --scale: 0.46; } }
-    @media (max-width: 480px) { :root { --scale: 0.36; } }
-    @media (max-width: 430px) { :root { --scale: 0.325; } }
+    /* --- МОБИЛЬНЫЕ (≤480px): компактные заголовок и футер --- */
+    @media (max-width: 480px) {
+      body { padding: 16px 12px 24px; }
 
-    /* ============================================================
-       IPHONE 14 PRO · 390–430px · ОДИН РАЗВОРОТ = ОДИН ЭКРАН
-    ============================================================ */
-    @media only screen and (max-width: 430px) {
-
-      body {
-        padding: 0;
-        margin: 0;
-        align-items: center;
-        justify-content: flex-start;
-        background: var(--bg-deep);
-      }
-
-      /* Меньше фото на мобильных → больше места под текст */
-      :root { --photo-height: 120px; }
-
-      /* Заголовок буклета — компактный */
       .booklet-header {
-        margin: 12px auto 8px auto;
-        padding: 0 12px;
+        margin: 8px auto 6px auto;
+        padding: 0 4px;
       }
 
       .booklet-header p {
@@ -564,39 +571,51 @@
         margin-bottom: 0.3rem;
       }
 
-      .booklet-header h1 {
-        font-size: 1.4rem;
-        letter-spacing: 3px;
-        margin-bottom: 0.2rem;
-      }
-
       .booklet-header .gold-line {
         width: 50px;
         margin: 0.5rem auto;
       }
 
       .row-outer { margin-bottom: 18px; }
-      .row-inner { margin-bottom: 18px; }
+      .row-inner { margin-bottom: 12px; }
 
-      /* Футер */
       .booklet-footer {
-        margin: 0 auto 20px auto;
-        padding: 0 16px;
+        margin-top: 14px;
         font-size: 0.45rem;
         letter-spacing: 2.5px;
-        border-top: none;
-        opacity: 0.55;
+        padding-top: 0.8rem;
       }
+    }
 
-      .booklet-footer::before {
-        content: '';
-        display: block;
-        width: 60px;
-        height: 1px;
-        margin: 0 auto 0.8rem auto;
-        background: var(--gold);
-        opacity: 0.3;
+    /* --- ОЧЕНЬ УЗКИЕ ЭКРАНЫ (<360px): ужимаем страницы,
+           чтобы текст на страницах 5–6 не обрезался --- */
+    @media (max-width: 359px) {
+      :root { --photo-height: 120px; }
+      .page { padding: 20px 18px 18px 18px; }
+      .page-5 li, .page-6 li { font-size: 0.6rem; line-height: 1.4; }
+    }
+
+    /* --- ЛАНДШАФТ с низкой высотой (<500px): ещё сильнее
+           уменьшаем масштаб, чтобы разворот влезал по высоте --- */
+    @media (orientation: landscape) and (max-height: 500px) {
+      :root {
+        --row-scale: calc(min(1, tan(atan2(100vw - 24px, 1200px))) * 0.78);
       }
+      .row-outer { margin-bottom: 14px; }
+      .row-inner { margin-bottom: 14px; }
+      .booklet-header { margin: 6px auto 4px auto; }
+    }
+
+    /* --- Резерв для браузеров без CSS-тригонометрии
+           (очень старые сборки). Значения — по той же формуле --- */
+    @supports not (transform: scale(tan(atan2(1px, 1px)))) {
+      @media (max-width: 360px) { :root { --row-scale: 0.25; } }
+      @media (min-width: 361px) and (max-width: 400px) { :root { --row-scale: 0.31; } }
+      @media (min-width: 401px) and (max-width: 430px) { :root { --row-scale: 0.34; } }
+      @media (min-width: 431px) and (max-width: 480px) { :root { --row-scale: 0.38; } }
+      @media (min-width: 481px) and (max-width: 600px) { :root { --row-scale: 0.48; } }
+      @media (min-width: 601px) and (max-width: 900px) { :root { --row-scale: 0.72; } }
+      @media (min-width: 901px) and (max-width: 1200px) { :root { --row-scale: 0.92; } }
     }
   </style>
 </head>
@@ -840,26 +859,6 @@
   <footer class="booklet-footer">
     <span>◆</span> гидрологическая безопасность · премиальное издание <span>◆</span>
   </footer>
-
-  <script>
-    /* Точный масштаб разворота (1200x800) под ширину экрана.
-       Один разворот = одна ширина экрана, без горизонтального скролла. */
-    (function () {
-      var root = document.documentElement;
-
-      function fit() {
-        var w = window.innerWidth || root.clientWidth;
-        var pad = w <= 430 ? 0 : (w <= 1280 ? 40 : 80);
-        var s = Math.min(1, (w - pad) / 1200);
-        root.style.setProperty('--scale', s);
-      }
-
-      window.addEventListener('resize', fit);
-      window.addEventListener('orientationchange', fit);
-      window.addEventListener('load', fit);
-      fit();
-    })();
-  </script>
 
 </body>
 </html>
