@@ -22,7 +22,8 @@
       --font-sans: 'Inter', 'Helvetica Neue', 'Montserrat', system-ui, -apple-system, sans-serif;
       --page-width: 400px;
       --page-height: 800px;
-      --photo-height: 155px;
+      --photo-height: 135px;
+      --scale: 1;
     }
 
     * {
@@ -152,14 +153,26 @@
       display: grid;
       grid-template-columns: repeat(3, var(--page-width));
       gap: 0;
-      margin-bottom: 80px;
+      margin: 0;
       width: fit-content;
-      box-shadow: 0 35px 60px -20px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(223, 186, 115, 0.08);
-      border-radius: 2px;
-      overflow: hidden;
+      transform: scale(var(--scale, 1));
+      transform-origin: top left;
     }
 
-    .row:last-of-type {
+    /* Обёртка удерживает разворот. Её размеры пересчитываются
+       вместе с --scale, поэтому после transform ничего не выходит
+       за границы и текст/картинки не «разъезжаются» на телефоне. */
+    .row-outer,
+    .row-inner {
+      width: calc(1200px * var(--scale, 1));
+      height: calc(800px * var(--scale, 1));
+      overflow: hidden;
+      margin: 0 auto 80px auto;
+      border-radius: 2px;
+      box-shadow: 0 35px 60px -20px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(223, 186, 115, 0.08);
+    }
+
+    .row-inner {
       margin-bottom: 20px;
     }
 
@@ -174,7 +187,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      padding: 30px 26px 28px 26px;
+      padding: 28px 26px 22px 26px;
       transition: var(--transition);
       background-image: linear-gradient(
         175deg,
@@ -285,7 +298,7 @@
       border-radius: 4px;
       background: #0a1219;
       display: block;
-      margin: 0.5rem 0 0.75rem 0;
+      margin: 0.4rem 0 0.6rem 0;
       position: relative;
       overflow: hidden;
       flex-shrink: 0;
@@ -499,54 +512,34 @@
     }
 
     /* ============================================================
-       АДАПТИВНОСТЬ · ОБЩАЯ
-       Масштабируем разворот через zoom (а НЕ transform: scale).
-       zoom пересчитывает layout, поэтому обёртки .row-outer /
-       .row-inner автоматически получают правильную высоту и ширину,
-       а содержимое страниц не выходит за границы и не наезжает
-       на заголовки. Коэффициенты подобраны так, чтобы при каждом
-       диапазоне ширин не возникало горизонтального скролла.
+       АДАПТИВНОСТЬ · МАСШТАБ РАЗВОРОТА
+       --scale подставляется скриптом внизу страницы ровно под
+       ширину экрана. Ниже — резервные значения на случай, если
+       JavaScript отключён. Используется transform: scale (обычно
+       работает везде), а размеры обёрток считаются из --scale,
+       поэтому текст и картинки всегда влезают без обрезки.
     ============================================================ */
     @media (max-width: 1280px) {
       body { padding: 40px 20px; }
-      .row { zoom: 0.88; }
+      :root { --scale: 0.95; }
     }
 
-    @media (max-width: 1100px) {
-      .row { zoom: 0.75; }
-    }
+    @media (max-width: 1100px) { :root { --scale: 0.86; } }
 
     @media (max-width: 950px) {
-      .row { zoom: 0.58; }
+      :root { --scale: 0.72; }
       .booklet-header h1 { font-size: 1.4rem; }
     }
 
-    @media (max-width: 750px) {
-      .row { zoom: 0.46; }
-    }
-
-    @media (max-width: 600px) {
-      .row { zoom: 0.36; }
-    }
-
-    @media (max-width: 480px) {
-      .row { zoom: 0.32; }
-    }
+    @media (max-width: 750px) { :root { --scale: 0.58; } }
+    @media (max-width: 600px) { :root { --scale: 0.46; } }
+    @media (max-width: 480px) { :root { --scale: 0.36; } }
+    @media (max-width: 430px) { :root { --scale: 0.325; } }
 
     /* ============================================================
        IPHONE 14 PRO · 390–430px · ОДИН РАЗВОРОТ = ОДИН ЭКРАН
-       1200px (три страницы по 400px) масштабируются до ширины
-       экрана. Для 390px — 0.325 (ровно 390px), для 430px — 0.35.
     ============================================================ */
-    @media only screen and (min-width: 390px) and (max-width: 419px) {
-      .row { zoom: 0.325; }
-    }
-
-    @media only screen and (min-width: 420px) and (max-width: 430px) {
-      .row { zoom: 0.35; }
-    }
-
-    @media only screen and (min-width: 390px) and (max-width: 430px) {
+    @media only screen and (max-width: 430px) {
 
       body {
         padding: 0;
@@ -582,23 +575,8 @@
         margin: 0.5rem auto;
       }
 
-      /* Разворот. Обёртка центрирует масштабированный ряд;
-         высота/ширина считаются автоматически (zoom), поэтому
-         ничего не нужно задавать вручную и нечему «ломаться». */
-      .row-outer,
-      .row-inner {
-        width: 100%;
-        margin: 0 0 20px 0;
-      }
-
-      .row {
-        margin: 0 auto;
-        border-radius: 6px;
-        overflow: hidden;
-        box-shadow:
-          0 0 0 1px rgba(223, 186, 115, 0.15),
-          0 15px 40px -10px rgba(0, 0, 0, 0.8);
-      }
+      .row-outer { margin-bottom: 18px; }
+      .row-inner { margin-bottom: 18px; }
 
       /* Футер */
       .booklet-footer {
@@ -862,6 +840,26 @@
   <footer class="booklet-footer">
     <span>◆</span> гидрологическая безопасность · премиальное издание <span>◆</span>
   </footer>
+
+  <script>
+    /* Точный масштаб разворота (1200x800) под ширину экрана.
+       Один разворот = одна ширина экрана, без горизонтального скролла. */
+    (function () {
+      var root = document.documentElement;
+
+      function fit() {
+        var w = window.innerWidth || root.clientWidth;
+        var pad = w <= 430 ? 0 : (w <= 1280 ? 40 : 80);
+        var s = Math.min(1, (w - pad) / 1200);
+        root.style.setProperty('--scale', s);
+      }
+
+      window.addEventListener('resize', fit);
+      window.addEventListener('orientationchange', fit);
+      window.addEventListener('load', fit);
+      fit();
+    })();
+  </script>
 
 </body>
 </html>
