@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Наводнения и защита населения · Евробуклет для печати</title>
+  <style>
+    /* ============================================================
+       ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ · ПРЕМИАЛЬНАЯ ПАЛИТРА
+    ============================================================ */
+    :root {
+      --bg-deep: #070b0e;
+      --card-bg: #0d1721;
+      --gold: #dfba73;
+      --gold-dim: rgba(223, 186, 115, 0.22);
+      --gold-glow: rgba(223, 186, 115, 0.30);
+      --platinum: #e5e9f0;
+      --platinum-muted: #b0b8c5;
+      --border-subtle: rgba(223, 186, 115, 0.18);
+      --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      --font-display: 'Inter', 'Helvetica Neue', 'Montserrat', system-ui, -apple-system, sans-serif;
+      --font-sans: 'Inter', 'Helvetica Neue', 'Montserrat', system-ui, -apple-system, sans-serif;
+      --page-width: 400px;
+      --page-height: 800px;
+      --photo-height: 155px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      font-family: var(--font-sans);
+      font-weight: 300;
+      color: var(--platinum);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 60px 40px;
+      background-image: radial-gradient(circle at 25% 15%, rgba(223, 186, 115, 0.025) 0%, transparent 55%);
+    }
+
+    /* ============================================================
+       ТИПОГРАФИКА · ЕДИНЫЙ СТИЛЬ · UPPERCASE / SMALL-CAPS
+    ============================================================ */
+    h1, h2, h3 {
+      font-family: var(--font-display);
+      font-weight: 500;
+      letter-spacing: 2px;
+      color: var(--gold);
+      line-height: 1.25;
+      text-transform: uppercase;
+      font-variant: small-caps;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      letter-spacing: 4px;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      text-align: center;
+      font-variant: small-caps;
+    }
+
+    h2 {
+      font-size: 1rem;
+      letter-spacing: 2px;
+      font-weight: 500;
+      margin-bottom: 0.65rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      font-variant: small-caps;
+    }
+
+    h3 {
+      font-size: 0.78rem;
+      letter-spacing: 1.8px;
+      font-weight: 500;
+      margin-bottom: 0.32rem;
+      margin-top: 0.6rem;
+      color: var(--gold);
+      font-variant: small-caps;
+    }
+
+    h3:first-of-type {
+      margin-top: 0;
+    }
+
+    p, li, .text-block {
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 300;
+      color: var(--platinum);
+      letter-spacing: 1.25px;
+      line-height: 1.6;
+      text-transform: uppercase;
+      font-variant: small-caps;
+    }
+
+    strong {
+      font-weight: 500;
+      color: var(--gold);
+      letter-spacing: 1.25px;
+    }
+
+    /* ============================================================
+       ЗАГОЛОВОК БУКЛЕТА
+    ============================================================ */
+    .booklet-header {
+      text-align: center;
+      margin-bottom: 50px;
+      width: 100%;
+      max-width: 1230px;
+    }
+
+    .booklet-header p {
+      font-size: 0.62rem;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: var(--platinum-muted);
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+      font-variant: small-caps;
+    }
+
+    .gold-line {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: 1rem auto;
+      opacity: 0.45;
+    }
+
+    /* ============================================================
+       ДВА РЯДА · КАЖДЫЙ РЯД = РАЗВОРОТ БУКЛЕТА
+    ============================================================ */
+    .row {
+      display: grid;
+      grid-template-columns: repeat(3, var(--page-width));
+      gap: 0;
+      margin-bottom: 80px;
+      width: fit-content;
+      box-shadow: 0 35px 60px -20px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(223, 186, 115, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .row:last-of-type {
+      margin-bottom: 20px;
+    }
+
+    /* ============================================================
+       СТРАНИЦА БУКЛЕТА · ФИКСИРОВАННЫЙ РАЗМЕР
+    ============================================================ */
+    .page {
+      width: var(--page-width);
+      height: var(--page-height);
+      background-color: var(--card-bg);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 30px 26px 28px 26px;
+      transition: var(--transition);
+      background-image: linear-gradient(
+        175deg,
+        rgba(7, 11, 14, 0.92) 0%,
+        rgba(13, 23, 33, 0.88) 35%,
+        rgba(13, 23, 33, 0.90) 60%,
+        rgba(7, 11, 14, 0.96) 100%
+      );
+    }
+
+    .page::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        145deg,
+        rgba(223, 186, 115, 0.03) 0%,
+        transparent 35%,
+        transparent 70%,
+        rgba(223, 186, 115, 0.02) 100%
+      );
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       ЗОЛОТЫЕ УГОЛКИ
+    ============================================================ */
+    .page .corner {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    .page .corner::before,
+    .page .corner::after {
+      content: '';
+      position: absolute;
+      background: var(--gold);
+    }
+
+    .page .corner-tl { top: 16px; left: 16px; }
+    .page .corner-tr { top: 16px; right: 16px; }
+    .page .corner-bl { bottom: 16px; left: 16px; }
+    .page .corner-br { bottom: 16px; right: 16px; }
+
+    .page .corner-tl::before { top: 0; left: 0; width: 100%; height: 1px; }
+    .page .corner-tl::after { top: 0; left: 0; width: 1px; height: 100%; }
+
+    .page .corner-tr::before { top: 0; right: 0; width: 100%; height: 1px; }
+    .page .corner-tr::after { top: 0; right: 0; width: 1px; height: 100%; }
+
+    .page .corner-bl::before { bottom: 0; left: 0; width: 100%; height: 1px; }
+    .page .corner-bl::after { bottom: 0; left: 0; width: 1px; height: 100%; }
+
+    .page .corner-br::before { bottom: 0; right: 0; width: 100%; height: 1px; }
+    .page .corner-br::after { bottom: 0; right: 0; width: 1px; height: 100%; }
+
+    /* ============================================================
+       КОНТЕНТ СТРАНИЦЫ
+    ============================================================ */
+    .page-content {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .page-number {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      letter-spacing: 3.5px;
+      color: var(--gold);
+      opacity: 0.55;
+      margin-bottom: 0.45rem;
+      padding-bottom: 0.15rem;
+      border-bottom: 1px solid rgba(223, 186, 115, 0.25);
+      width: fit-content;
+      text-transform: uppercase;
+      font-variant: small-caps;
+      font-weight: 400;
+    }
+
+    /* ============================================================
+       БЛОК ДЛЯ ФОТО · КАРТИНКА ЗАПОЛНЯЕТ БЛОК ПОЛНОСТЬЮ
+    ============================================================ */
+    .image-placeholder {
+      width: 100%;
+      height: var(--photo-height);
+      border: 1px solid rgba(223, 186, 115, 0.4);
+      border-radius: 4px;
+      background: #0a1219;
+      display: block;
+      margin: 0.5rem 0 0.75rem 0;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .image-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(223, 186, 115, 0.10) 0%,
+        transparent 40%,
+        transparent 60%,
+        rgba(7, 11, 14, 0.35) 100%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .image-placeholder img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      z-index: 1;
+    }
+
+    .image-placeholder span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-display);
+      font-size: 0.52rem;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.75;
+      text-align: center;
+      padding: 0 1rem;
+      line-height: 1.7;
+      font-weight: 400;
+      font-variant: small-caps;
+      z-index: 3;
+      width: 100%;
+    }
+
+    /* ============================================================
+       СПИСКИ · ЗОЛОТЫЕ РОМБЫ
+    ============================================================ */
+    ul {
+      list-style: none;
+      margin-top: 0.12rem;
+      margin-bottom: 0.12rem;
+    }
+
+    li {
+      position: relative;
+      padding-left: 1rem;
+      margin-bottom: 0.3rem;
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      line-height: 1.55;
+      color: var(--platinum);
+      letter-spacing: 1.15px;
+      text-transform: uppercase;
+      font-variant: small-caps;
+      font-weight: 300;
+    }
+
+    li::before {
+      content: '◆';
+      position: absolute;
+      left: 0;
+      top: -0.02em;
+      color: var(--gold);
+      font-size: 0.42rem;
+      opacity: 0.65;
+      line-height: 1.55;
+    }
+
+    /* ============================================================
+       ДОПОЛНИТЕЛЬНЫЕ ЭЛЕМЕНТЫ
+    ============================================================ */
+    .highlight-quote {
+      color: var(--gold);
+      opacity: 0.88;
+      border-left: 2px solid var(--gold);
+      padding-left: 0.8rem;
+      margin: 0.55rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      line-height: 1.55;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-variant: small-caps;
+      font-weight: 300;
+    }
+
+    .data-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 0.6rem;
+      margin: 0.5rem 0;
+    }
+
+    .data-row span {
+      font-family: var(--font-sans);
+      font-size: 0.58rem;
+      color: var(--platinum-muted);
+      border: 1px solid rgba(223, 186, 115, 0.18);
+      padding: 0.14rem 0.65rem;
+      border-radius: 10px;
+      letter-spacing: 1.7px;
+      text-transform: uppercase;
+      font-variant: small-caps;
+      font-weight: 300;
+    }
+
+    /* ============================================================
+       ФУТЕР
+    ============================================================ */
+    .booklet-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-family: var(--font-display);
+      font-size: 0.55rem;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: var(--platinum-muted);
+      opacity: 0.4;
+      border-top: 1px solid rgba(223, 186, 115, 0.12);
+      padding-top: 1.5rem;
+      width: 100%;
+      max-width: 1230px;
+      font-variant: small-caps;
+      font-weight: 300;
+    }
+
+    .booklet-footer span {
+      color: var(--gold);
+      opacity: 0.6;
+    }
+
+    /* ============================================================
+       ТОНКАЯ НАСТРОЙКА СТРАНИЦ 5 И 6
+    ============================================================ */
+    .page-5 h3,
+    .page-6 h3 {
+      margin-top: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .page-5 h3:first-of-type,
+    .page-6 h3:first-of-type {
+      margin-top: 0;
+    }
+
+    .page-5 li,
+    .page-6 li {
+      font-size: 0.67rem;
+      line-height: 1.52;
+      margin-bottom: 0.26rem;
+      letter-spacing: 1.1px;
+    }
+
+    /* ============================================================
+       ПЕЧАТЬ
+    ============================================================ */
+    @media print {
+      body {
+        background: #070b0e;
+        padding: 0;
+      }
+
+      .booklet-header {
+        margin-bottom: 20px;
+      }
+
+      .row {
+        margin-bottom: 40px;
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+
+      .page {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .page::after,
+      .image-placeholder,
+      .image-placeholder::before {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    /* ============================================================
+       АДАПТИВНОСТЬ · ОБЩАЯ
+    ============================================================ */
+    @media (max-width: 1280px) {
+      body { padding: 40px 20px; }
+      .row { transform: scale(0.92); transform-origin: top center; }
+    }
+
+    @media (max-width: 1100px) {
+      .row { transform: scale(0.82); }
+    }
+
+    @media (max-width: 950px) {
+      .row { transform: scale(0.70); }
+      .booklet-header h1 { font-size: 1.4rem; }
+    }
+
+    @media (max-width: 750px) {
+      .row { transform: scale(0.58); }
+    }
+
+    @media (max-width: 600px) {
+      .row { transform: scale(0.45); }
+    }
+
+    @media (max-width: 480px) {
+      .row { transform: scale(0.36); }
+    }
+
+    /* ============================================================
+       IPHONE 14 PRO · 393×852 · СКРИН БЕЗ ОБРЕЗКИ
+       Один разворот = один экран. Три страницы по 400px
+       (сумма 1200px) масштабируются до ширины экрана iPhone.
+       Коэффициент ≈ 0.325 — влезает точно.
+    ============================================================ */
+    @media only screen
+      and (min-device-width: 390px)
+      and (max-device-width: 430px)
+      and (-webkit-min-device-pixel-ratio: 3),
+      only screen
+      and (min-width: 390px)
+      and (max-width: 430px) {
+
+      body {
+        padding: 0;
+        margin: 0;
+        align-items: flex-start;
+        justify-content: flex-start;
+        background: var(--bg-deep);
+      }
+
+      /* Заголовок буклета — компактный */
+      .booklet-header {
+        margin: 12px auto 8px auto;
+        padding: 0 12px;
+      }
+
+      .booklet-header p {
+        font-size: 0.5rem;
+        letter-spacing: 2.5px;
+        margin-bottom: 0.3rem;
+      }
+
+      .booklet-header h1 {
+        font-size: 1.4rem;
+        letter-spacing: 3px;
+        margin-bottom: 0.2rem;
+      }
+
+      .booklet-header .gold-line {
+        width: 50px;
+        margin: 0.5rem auto;
+      }
+
+      /* Каждый ряд — отдельный экран */
+      .row {
+        transform: scale(0.325);
+        transform-origin: top left;
+        margin: 0;
+        margin-bottom: 0;
+        box-shadow: none;
+        border-radius: 0;
+        overflow: visible;
+      }
+
+      /* Обёртки-экраны для корректного позиционирования масштаба */
+      .row-outer,
+      .row-inner {
+        height: calc(800px * 0.325);
+        width: calc(1200px * 0.325);
+        margin: 0 auto;
+        margin-bottom: 20px;
+        overflow: hidden;
+        border-radius: 6px;
+        box-shadow:
+          0 0 0 1px rgba(223, 186, 115, 0.15),
+          0 15px 40px -10px rgba(0, 0, 0, 0.8);
+        position: relative;
+      }
+
+      /* Внутренний ряд — точное позиционирование */
+      .row-outer,
+      .row-inner {
+        display: block;
+      }
+
+      .row-outer > .row,
+      .row-inner > .row {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      /* Футер */
+      .booklet-footer {
+        margin: 0 auto 20px auto;
+        padding: 0 16px;
+        font-size: 0.45rem;
+        letter-spacing: 2.5px;
+        border-top: none;
+        opacity: 0.55;
+      }
+
+      .booklet-footer::before {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 1px;
+        margin: 0 auto 0.8rem auto;
+        background: var(--gold);
+        opacity: 0.3;
+      }
+    }
+
+    /* Дополнительно для iPhone 14 Pro Max и Plus — 430px */
+    @media only screen
+      and (min-width: 420px)
+      and (max-width: 480px)
+      and (orientation: portrait) {
+
+      .row {
+        transform: scale(0.36);
+        transform-origin: top left;
+      }
+
+      .row-outer,
+      .row-inner {
+        height: calc(800px * 0.36);
+        width: calc(1200px * 0.36);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="booklet-header">
+    <p>гидрологическая безопасность · премиальное издание</p>
+    <h1>Наводнения</h1>
+    <div class="gold-line"></div>
+    <p style="font-size:0.58rem; letter-spacing:3.5px;">и защита населения · евробуклет 6 страниц</p>
+  </header>
+
+  <!-- РЯД 1 · ЛИЦЕВОЙ РАЗВОРОТ · СТРАНИЦЫ 1–3 -->
+  <div class="row-outer">
+    <div class="row">
+
+      <!-- СТРАНИЦА 1 -->
+      <article class="page page-1">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="page-content">
+          <span class="page-number">01 / 06</span>
+          <h2>Понятие наводнения<br>и его разновидности</h2>
+
+          <div class="image-placeholder">
+            <img src="первое.jpg" alt="Наводнение">
+          </div>
+
+          <p><strong>Определение.</strong> Временное значительное затопление местности водой в результате подъёма её уровня в реке, озере или на море, а также образование временных водотоков.</p>
+
+          <div class="data-row">
+            <span>1 место в россии</span>
+            <span>746 городов</span>
+            <span>2 место по жертвам</span>
+          </div>
+
+          <p>Наводнения занимают первое место среди опасных гидрологических явлений по частоте, площади и ущербу, а по числу жертв — второе после землетрясений.</p>
+
+          <h3>По причинам возникновения</h3>
+          <ul>
+            <li><strong>Половодье</strong> — периодический подъём из-за таяния снега или ледников; заторы (нагромождение льда) и зажоры (внутриводный рыхлый лёд).</li>
+            <li><strong>Паводок</strong> — интенсивный кратковременный подъём от обильных дождей, ливней, быстрого таяния при оттепелях.</li>
+            <li><strong>Ветровой нагон</strong> — подъём воды под действием ветра в морских устьях рек, на наветренных берегах озёр и водохранилищ.</li>
+            <li><strong>Цунами</strong> — длинные морские гравитационные волны от сдвига дна при землетрясениях и извержениях (скорость 50–1000 км/ч).</li>
+            <li><strong>Прорыв гидротехнических сооружений.</strong></li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- СТРАНИЦА 2 -->
+      <article class="page page-2">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="page-content">
+          <span class="page-number">02 / 06</span>
+          <h2>Масштабы наводнений<br>и поражающие факторы</h2>
+
+          <div class="image-placeholder">
+            <img src="второе.jpg" alt="Масштабы наводнений">
+          </div>
+
+          <h3>Классификация по масштабам</h3>
+          <ul>
+            <li><strong>1-я (низкие)</strong> — небольшая площадь, незначительный ущерб, без угрозы жизни (1 раз в 5–10 лет).</li>
+            <li><strong>2-я (высокие)</strong> — затопление значительных участков долин, угроза жизни, частичная эвакуация (1 раз в 20–25 лет).</li>
+            <li><strong>3-я (выдающиеся)</strong> — целые речные бассейны и населённые пункты, массовые потери, эвакуация (1 раз в 50–100 лет).</li>
+            <li><strong>4-я (катастрофические)</strong> — огромные площади, паралич хозяйственной деятельности, большие потери (1 раз в 100–200 лет).</li>
+          </ul>
+
+          <h3>Поражающие факторы</h3>
+          <ul>
+            <li>Утопление, механические травмы, переохлаждение.</li>
+            <li>Санитарно-эпидемиологическая опасность: разрушение водоснабжения и канализации → распространение инфекций (гепатит, дизентерия, лептоспироз), падёж скота и разложение трупов.</li>
+          </ul>
+
+          <div class="highlight-quote">
+            «Разрушение систем жизнеобеспечения превращает воду из источника жизни в источник эпидемий».
+          </div>
+        </div>
+      </article>
+
+      <!-- СТРАНИЦА 3 -->
+      <article class="page page-3">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="page-content">
+          <span class="page-number">03 / 06</span>
+          <h2>Аварии на гидродинамически<br>опасных объектах (ГДО)</h2>
+
+          <div class="image-placeholder">
+            <img src="третье.jpeg" alt="Гидродинамически опасные объекты">
+          </div>
+
+          <p><strong>ГДО</strong> — сооружения или естественные образования, создающие разницу уровней воды до (верхний бьеф) и после (нижний бьеф): плотины, гидроузлы, запруды, дамбы.</p>
+
+          <h3>Особенности и поражающие факторы</h3>
+          <ul>
+            <li>Главная особенность — <strong>волна прорыва</strong>: на равнинах до 25 км/ч, в горах до 100 км/ч.</li>
+            <li>Поражающие факторы: утопление, механические травмы, переохлаждение, кинетическая энергия волны.</li>
+          </ul>
+
+          <h3>Четыре зоны катастрофического затопления</h3>
+          <ul>
+            <li><strong>Первая (бурный поток)</strong> — 6–12 км от сооружения, скорость ≥30 км/ч, время до 30 мин.</li>
+            <li><strong>Вторая (быстрое течение)</strong> — 15–25 км, скорость 15–20 км/ч, время 50–60 мин.</li>
+            <li><strong>Третья (среднее течение)</strong> — 30–50 км, скорость 10–15 км/ч, время 2–3 ч.</li>
+            <li><strong>Четвёртая (слабое течение/разлив)</strong> — 35–70 км, скорость 6–10 км/ч.</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+  <!-- РЯД 2 · ВНУТРЕННИЙ РАЗВОРОТ · СТРАНИЦЫ 4–6 -->
+  <div class="row-inner">
+    <div class="row">
+
+      <!-- СТРАНИЦА 4 -->
+      <article class="page page-4">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="page-content">
+          <span class="page-number">04 / 06</span>
+          <h2>Прогнозирование<br>и организация защиты</h2>
+
+          <div class="image-placeholder">
+            <img src="четвертое.jpg" alt="Прогнозирование наводнений">
+          </div>
+
+          <h3>Прогнозирование</h3>
+          <ul>
+            <li>Краткосрочные (до 10–12 суток) и долгосрочные (2–3 месяца и более).</li>
+            <li>Локальные или территориальные.</li>
+            <li>Наличие прогноза существенно уменьшает материальный ущерб.</li>
+          </ul>
+
+          <h3>Защитные мероприятия</h3>
+          <ul>
+            <li>При значительном времени упреждения: ограждающие дамбы и валы, заблаговременная эвакуация населения и скота, вывоз ценностей.</li>
+            <li>В период ледохода: устранение заторов и зажоров на реках.</li>
+          </ul>
+
+          <h3>Оповещение и эвакуация</h3>
+          <ul>
+            <li>Через местные радиотрансляционные сети, телевидение, администрацию предприятий.</li>
+            <li>Сообщаются места сборных эвакопунктов и маршруты эвакуации.</li>
+            <li>На предприятиях и в школах временно прекращаются занятия, меняется режим работы.</li>
+            <li>При внезапном наводнении — все технические средства, включая громкоговорящие установки.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- СТРАНИЦА 5 -->
+      <article class="page page-5">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="page-content">
+          <span class="page-number">05 / 06</span>
+          <h2>Действия населения<br>при наводнении</h2>
+
+          <div class="image-placeholder">
+            <img src="пятое.jpg" alt="Спасательные работы">
+          </div>
+
+          <h3>При предупредительных мероприятиях</h3>
+          <ul>
+            <li>Позаботиться о сохранности вещей, документов, денег (завернуть в непромокаемые пакеты).</li>
+            <li>Подготовить аптечку первой помощи, перенести ценные предметы на верхние этажи.</li>
+          </ul>
+
+          <h3>С началом затопления</h3>
+          <ul>
+            <li>Не терять самообладание, не поддаваться панике.</li>
+            <li>Отключить газ, электроприборы, воду.</li>
+            <li>Перейти на верхние этажи или чердаки, обозначить присутствие вывешиванием белой ткани.</li>
+          </ul>
+
+          <h3>При внезапном наводнении на улице</h3>
+          <ul>
+            <li>Если поток настигает автомобиль или мотоцикл — остановиться (поток может опрокинуть).</li>
+            <li>Попав в воду, сбросить тяжёлую одежду и обувь, отыскать плавающие предметы или деревья.</li>
+          </ul>
+
+          <h3>После спада воды</h3>
+          <ul>
+            <li>Убедиться в отсутствии повреждений конструкций здания.</li>
+            <li>Проветрить помещение, не зажигать огонь и не включать электроприборы до проверки сети.</li>
+            <li>Не использовать непроверенную воду и попавшие в неё продукты.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- СТРАНИЦА 6 -->
+      <article class="page page-6">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="page-content">
+          <span class="page-number">06 / 06</span>
+          <h2>Первая помощь при утоплении,<br>переохлаждении и отморожении</h2>
+
+          <div class="image-placeholder">
+            <img src="шестое.jpg" alt="Первая помощь">
+          </div>
+
+          <h3>Первая помощь при утоплении</h3>
+          <ul>
+            <li>Подплывать со стороны спины, схватив за волосы или подмышки, перевернуть лицом вверх.</li>
+            <li>Если пострадавший без сознания и дыхания: уложить животом на согнутое колено (голова ниже туловища), очистить рот от ила и песка, выдавить воду надавливанием (не более 20–30 секунд).</li>
+            <li>Немедленно начать искусственную вентиляцию лёгких и непрямой массаж сердца. Учитывать риск отека лёгких («вторичного» утопления) в сроки от 15 до 72 часов.</li>
+          </ul>
+
+          <h3>При переохлаждении</h3>
+          <ul>
+            <li>Доставить в тёплое помещение, поместить в ванну или обложить грелками с водой (начальная температура не выше 22–24 °C, постепенно доводя за 20–30 минут до 35 °C). Дать горячее сладкое питьё.</li>
+          </ul>
+
+          <h3>При отморожении</h3>
+          <ul>
+            <li>Отмороженную конечность растирают и разминают чистыми руками, либо обрабатывают спиртом и массируют сухим способом до покраснения кожи.</li>
+            <li><strong>Растирать снегом запрещено</strong> — это приводит к дополнительному охлаждению и повреждению кожи.</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+  <footer class="booklet-footer">
+    <span>◆</span> гидрологическая безопасность · премиальное издание <span>◆</span>
+  </footer>
+
+</body>
+</html>
